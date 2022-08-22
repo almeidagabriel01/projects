@@ -15,14 +15,36 @@ botaoAdicionar.addEventListener("click", function(event) {
   // criando a tr e a td do paciente e armazenando na variável pacienteTr
   var pacienteTr = montaTr(paciente);
 
+  // verificando se o paciente é válido
+  var erros = validaPaciente(paciente); // vai retornar a mensagem de erro ou uma string vazia, sem nenhum caractere.
+  
+  // caso tenha uma mensagem de texto dentro do array
+  if(erros.length > 0){
+    exibeMensagensDeErro(erros); // vai mostrar cada mensagem de erro
+    return; // e vai retornar vazio e nâo vai continuar executando as linhas abaixo da fução anônima.
+  }
+
   // inserindo os td e tr na tabela
   var tabela = document.querySelector("#tabela-pacientes");
   tabela.appendChild(pacienteTr);
 
-  // limpando os inputs depois que colocar na tabela
+  // limpando os inputs depois que colocar na tabela e as mensagens de erro
   form.reset();
-
+  var mensagensErro = document.querySelector("#mensagens-erro");
+  mensagensErro.innerHTML = "";
 });
+
+function exibeMensagensDeErro(erros){
+  var ul = document.querySelector("#mensagens-erro"); // selecionando a ul
+  ul.innerHTML = ""; // apagando as tags li dentro da tag ul para não acumular
+
+  // for each para criar uma lista de erros dentro do HTML
+  erros.forEach(function(erro) {
+    var li = document.createElement("li"); // criando a tag li no html
+    li.textContent = erro; // inserindo o conteudo de texto dentro do li
+    ul.appendChild(li); // colocando a li dentro do ul
+  });
+}
 
 function obtemPacienteDoFormulario(form){
 
@@ -66,4 +88,35 @@ function montaTd(dado, classe){
   td.classList.add(classe);
 
   return td;
+}
+
+function validaPaciente(paciente){
+
+  var erros = []; // criando um array para retornar as diferentes mensagens de erro
+
+  // verificando os campos foram preenchidos
+  if(paciente.nome.length == 0){
+    erros.push("O nome não pode ser em branco"); // empurrando a string nome inválido para dentro do array
+  }
+  if(paciente.gordura.length == 0){
+    erros.push("A gordura não pode ser em branco"); // empurrando a string gordura inválida para dentro do array
+  }
+  if(paciente.peso.length == 0){
+    erros.push("O peso não pode ser em branco"); // empurrando a string peso inválido para dentro do array
+  }
+  if(paciente.altura.length == 0){
+    erros.push("A altura não pode ser em branca");
+  }
+
+  // validando o peso e a altura do paciente
+  else if(!validaPeso(paciente.peso) && validaAltura(paciente.altura))
+    erros.push("Peso é inválido"); // empurrando a string peso inválido para dentro do array
+
+  else if(validaPeso(paciente.peso) && !validaAltura(paciente.altura))
+    erros.push("Altura é inválida"); // empurrando a string altura inválida para dentro do array
+  
+  else if(!validaPeso(paciente.peso) && !validaAltura(paciente.altura))
+    erros.push("Altura e peso são inválidos"); // empurrando a string altura e peso inválidos para dentro do array
+
+  return erros;
 }
