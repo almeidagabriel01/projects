@@ -9,7 +9,11 @@ $(
     incializaContadores(); // inicializando o cronometro
     inicializaMarcadores(); // inicializando o marcador se está correto ou errado o que foi digitado
     $("#botao-reiniciar").click(reiniciaJogo); // quando clicar no botão, irá reiniciar o jogo
-    removeLinha(); // inicializando a função de remover linha para remover linha padrão
+    atualizaPlacar();
+    $("#usuarios").selectize({
+      create: true,
+      sortField: 'text'
+  });
   }
 );
 
@@ -21,6 +25,11 @@ function atualizaTamanhoFrase() {
   var tamanhoFrase = $("#tamanho-frase");// pegando o número de palavras dentro do HTML.
 
   tamanhoFrase.text(numPalavras); // mudando o conteúdo de texto do tamanhoFrase para o numero de palavras da frase
+}
+
+function atualizaTempoInicial(tempo) {
+  tempoInicial = tempo;
+  $("#tempo-digitacao").text(tempo);
 }
 
 function incializaContadores() {
@@ -37,10 +46,9 @@ function incializaContadores() {
 }
 
 function inicializaMarcadores() {
-  var frase = $(".frase").text(); // salvando a frase
-
   // enquanto estiver digitando...
   campo.on("input", function () {
+    var frase = $(".frase").text(); // pega a frase
     var digitado = campo.val(); // salvar o que está sendo digitado
     var comparavel = frase.substr(0, digitado.length); // var para comparar o que foi digitado com o que está na frase dinamicamente.
 
@@ -57,8 +65,6 @@ function inicializaMarcadores() {
 }
 
 function inicializaCronometro() {
-  var tempoRestante = $("#tempo-digitacao").text(); // pega o conteúdo do elemento que conta o tempo no HTML.
-
   /*
   $("#botao-reiniciar").attr("disabled", true); // desabilitando o botão para não poder clicar enquanto estiver rodando o cronometro e acontecer bug
   */
@@ -67,8 +73,10 @@ function inicializaCronometro() {
   campo.one("focus", function () {
     // setando um intervalo de 1s ao realizar a função e armazenando o ID do setInterval para que quando zerar, parar de acionar a função
     var cronometroID = setInterval(function () {
+      var tempoRestante = $("#tempo-digitacao").text(); // selecionando o tempo restante lá do HTML.
       tempoRestante--; // subtraindo a cada um segundo
-      $("#tempo-digitacao").text(tempoRestante); // mudando o valor no campo
+
+      $("#tempo-digitacao").text(tempoRestante); // coloca o tempo restante no campo HTML.
 
       // caso o tempo restante for 0, irá disabilitar o campo textarea e para de subtrair
       if (tempoRestante < 1) {
