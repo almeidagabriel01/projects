@@ -26,9 +26,12 @@ function inserePlacar() {
 // função para scrollar a página até o placar quando for aberto
 function scrollPlacar() {
   var posicaoPlacar = $(".placar").offset().top; // pegando a posição no topo do placar na página
-  $("html,body").animate({
-    scrollTop: posicaoPlacar + "px"
-  }, 1000);
+  $("html,body").animate(
+    {
+      scrollTop: posicaoPlacar + "px",
+    },
+    1000
+  );
 }
 
 // criando nova linha dentro da tabela
@@ -39,7 +42,10 @@ function novaLinha(usuario, palavras) {
   var colunaRemover = $("<td>");
 
   var link = $("<a>").addClass("botao-remover").attr("href", "#");
-  var icone = $("<i>").addClass("small").addClass("material-icons").text("delete");
+  var icone = $("<i>")
+    .addClass("small")
+    .addClass("material-icons")
+    .text("delete");
 
   // Icone dentro do <a>
   link.append(icone);
@@ -91,7 +97,7 @@ function sincronizaPlacar() {
     // criando a var score com nome e pontos para inserir no placar
     var score = {
       usuario: usuario,
-      pontos: palavras
+      pontos: palavras,
     };
 
     // salvando o score no placar
@@ -100,17 +106,28 @@ function sincronizaPlacar() {
 
   // colocando o placar dentro de dados para passar como parâmetro para o post
   var dados = {
-    placar: placar
+    placar: placar,
   };
   // colocando os dados do placar dentro do servidor
-  $.post("http://localhost:3000/placar", dados, function () {
+  $.post("http://localhost:3000/placar", dados, function () { // se der certo, vai executar a função
     console.log("Salvou o placar no servidor");
+    $(".tooltip").tooltipster("open").tooltipster("content", "Sucesso ao sincronizar");
+  }).fail(function() { // se der errado, vai executar a função
+    $(".tooltip").tooltipster("open").tooltipster("content", "Falha ao sincronizar");
+  })
+  
+  .always(function(){ // sempre vai executar a função (fechar o tooltip)
+    setTimeout(function(){
+      $(".tooltip").tooltipster("close");
+    }, 1200);
   });
 }
 
 function atualizaPlacar() {
-  $.get("http://localhost:3000/placar", function (data) { // pegando os dados do placar e realizar a função com o retorno (data)
-    $(data).each(function () { // iterando cada linha dentro do servidor
+  $.get("http://localhost:3000/placar", function (data) {
+    // pegando os dados do placar e realizar a função com o retorno (data)
+    $(data).each(function () {
+      // iterando cada linha dentro do servidor
       var linha = novaLinha(this.usuario, this.pontos); // criando a linha com os usuarios e pontos vindos do servidor (data)
 
       linha.find(".botao-remover").click(removeLinha); // vai procurar o botao-remover dentro da var linha e acionar a função de remover

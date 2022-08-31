@@ -2,27 +2,29 @@ var tempoInicial = $("#tempo-digitacao").text(); // salvando o tempo inicial
 var campo = $(".campo-digitacao"); // salvando o campo de digitação
 
 // quando a página estiver carregada, vai realizar a função
-$(
-  function () {
-    atualizaTamanhoFrase(); // inicializando a atualização do tamanho da frase
-    inicializaCronometro(); // inicializando o cronometro
-    incializaContadores(); // inicializando o cronometro
-    inicializaMarcadores(); // inicializando o marcador se está correto ou errado o que foi digitado
-    $("#botao-reiniciar").click(reiniciaJogo); // quando clicar no botão, irá reiniciar o jogo
-    atualizaPlacar();
-    $("#usuarios").selectize({
-      create: true,
-      sortField: 'text'
+$(function () {
+  atualizaTamanhoFrase(); // inicializando a atualização do tamanho da frase
+  inicializaCronometro(); // inicializando o cronometro
+  incializaContadores(); // inicializando o cronometro
+  inicializaMarcadores(); // inicializando o marcador se está correto ou errado o que foi digitado
+  $("#botao-reiniciar").click(reiniciaJogo); // quando clicar no botão, irá reiniciar o jogo
+  atualizaPlacar(); // atualizando o placar
+  // inicializando o selectize
+  $("#usuarios").selectize({
+    create: true,
+    sortField: "text",
   });
-  }
-);
+  $(".tooltip").tooltipster({
+    trigger: "custom"
+  }); // inicializando o tooltipster
+});
 
 function atualizaTamanhoFrase() {
-  var frase = $(".frase").text();// pegando o conteúdo de texto do elemento com a classe frase
+  var frase = $(".frase").text(); // pegando o conteúdo de texto do elemento com a classe frase
 
-  var numPalavras = frase.split(/\S+/).length - 1;// quebrando o texto nos espaços, salvando dentro de um array e retornando o tamanho desse array
+  var numPalavras = frase.split(/\S+/).length - 1; // quebrando o texto nos espaços, salvando dentro de um array e retornando o tamanho desse array
 
-  var tamanhoFrase = $("#tamanho-frase");// pegando o número de palavras dentro do HTML.
+  var tamanhoFrase = $("#tamanho-frase"); // pegando o número de palavras dentro do HTML.
 
   tamanhoFrase.text(numPalavras); // mudando o conteúdo de texto do tamanhoFrase para o numero de palavras da frase
 }
@@ -56,8 +58,7 @@ function inicializaMarcadores() {
     if (digitado == comparavel) {
       campo.addClass("borda-verde");
       campo.removeClass("borda-vermelha");
-    }
-    else {
+    } else {
       campo.addClass("borda-vermelha");
       campo.removeClass("borda-verde");
     }
@@ -88,7 +89,6 @@ function inicializaCronometro() {
       $("#botao-reiniciar").click(function () {
         clearInterval(cronometroID);
       });
-
     }, 1000);
   });
 }
