@@ -1,6 +1,9 @@
-from flask import render_template, request, redirect, session, flash, url_for
+from sqlite3 import Timestamp
+from flask import render_template, request, redirect, session, flash, url_for,send_from_directory
 from jogoteca import app, db
 from models import Jogos, Usuarios
+from helpers import recupera_imagem, deleta_arquivo
+import time
 
 @app.route('/')  # Rota principal
 def index():
@@ -36,7 +39,8 @@ def criar():
     
     arquivo = request.files['arquivo'] # Pega o arquivo enviado no formulário
     upload_path = app.config['UPLOAD_PATH'] # Pega o caminho de upload definido no arquivo config.py
-    arquivo.save(f'{upload_path}/capa{novo_jogo.id}.jpg') # Salva o arquivo na pasta de upload
+    timestamp = time.time() # Pega o tempo atual
+    arquivo.save(f'{upload_path}/capa{novo_jogo.id}-{timestamp}.jpg') # Salva o arquivo na pasta de upload com um nome unico para contornar o cache do navegador
     
     # Redireciona para a rota principal função index (rota principal)
     return redirect(url_for('index'))
@@ -48,7 +52,8 @@ def editar(id):
         # Redireciona para a rota login com o parâmetro proxima = novo (para que o usuário seja redirecionado para a rota editar após o login)
         return redirect(url_for('login', proxima=url_for('editar')))
     jogo = Jogos.query.filter_by(id=id).first() #pega o jogo pelo id
-    return render_template('editar.html', titulo='Editando Jogo', jogo=jogo)
+    capa_jogo = recupera_imagem(id) #pega a capa do jogo pelo id
+    return render_template('editar.html', titulo='Editando Jogo', jogo=jogo, capa_jogo=capa_jogo)
 
 @app.route('/atualizar', methods=['POST',])# Aceita apenas o método POST
 def atualizar():
@@ -59,6 +64,12 @@ def atualizar():
 
     db.session.add(jogo)  # Adiciona o novo jogo ao banco de dados
     db.session.commit()  # Confirma a operação
+    
+    arquivo = request.files['arquivo'] # Pega o arquivo enviado no formulário
+    upload_path = app.config['UPLOAD_PATH'] # Pega o caminho de upload definido no arquivo config.py
+    timestamp = time.time() #pega o tempo atual
+    deleta_arquivo(jogo.id) #deleta arquivos antigos
+    arquivo.save(f'{upload_path}/capa{jogo.id}-{timestamp}.jpg') # Salva o arquivo na pasta de upload com um nome unico para contornar o cache do navegador
     
     return redirect(url_for('index'))
 
@@ -110,3 +121,7 @@ def logout():
     flash('Logout efetuado com sucesso!')
     # Redireciona para a rota principal (função index)
     return redirect(url_for('index'))
+
+@app.route('/uploads/<nome_arquivo>') # Rota para exibir a imagem
+def imagem(nome_arquivo):
+    return send_from_directory('uploads', nome_arquivo) #retorna a imagem do jogo

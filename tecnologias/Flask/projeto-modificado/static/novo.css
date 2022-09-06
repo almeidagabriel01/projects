@@ -1,9 +1,0 @@
-#salvar{
-  margin-top: 10px;
-  transition: 1s;
-}
-
-#salvar:hover{
-  transform: scale(1.1);
-  background-color: #0b4eb3;
-}
