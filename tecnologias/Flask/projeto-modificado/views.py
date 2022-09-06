@@ -11,7 +11,7 @@ def index():
 @app.route('/novo')  # Rota para o formulário de criação de novo jogo
 def novo():
     # se não houver nenhuma chave 'usuario_logado' no dicionário session, redireciona para a rota login
-    if ('usuario_logado' not in session or session['usuario_logado'] == None):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
         # Redireciona para a rota login com o parâmetro proxima = novo (para que o usuário seja redirecionado para a rota novo após o login)
         return redirect(url_for('login', proxima=url_for('novo')))
     return render_template('novo.html', titulo='Novo Jogo')
@@ -34,6 +34,9 @@ def criar():
     db.session.add(novo_jogo)  # Adiciona o novo jogo ao banco de dados
     db.session.commit()  # Confirma a operação
     
+    arquivo = request.files['arquivo'] # Pega o arquivo enviado no formulário
+    upload_path = app.config['UPLOAD_PATH'] # Pega o caminho de upload definido no arquivo config.py
+    arquivo.save(f'{upload_path}/capa{novo_jogo.id}.jpg') # Salva o arquivo na pasta de upload
     
     # Redireciona para a rota principal função index (rota principal)
     return redirect(url_for('index'))
@@ -42,14 +45,34 @@ def criar():
 def editar(id):
     # se não houver nenhuma chave 'usuario_logado' no dicionário session, redireciona para a rota login
     if ('usuario_logado' not in session or session['usuario_logado'] == None):
-        # Redireciona para a rota login com o parâmetro proxima = novo (para que o usuário seja redirecionado para a rota novo após o login)
+        # Redireciona para a rota login com o parâmetro proxima = novo (para que o usuário seja redirecionado para a rota editar após o login)
         return redirect(url_for('login', proxima=url_for('editar')))
     jogo = Jogos.query.filter_by(id=id).first() #pega o jogo pelo id
     return render_template('editar.html', titulo='Editando Jogo', jogo=jogo)
 
-@app.route('/atualizar', methods=['POST', ])  # Aceita apenas o método POST
+@app.route('/atualizar', methods=['POST',])# Aceita apenas o método POST
 def atualizar():
-    pass
+    jogo = Jogos.query.filter_by(id=request.form['id']).first() #pega o jogo pelo id
+    jogo.nome = request.form['nome']  # Pega o valor do campo nome
+    jogo.categoria = request.form['categoria']  # Pega o valor do campo categoria
+    jogo.console = request.form['console']  # Pega o valor do campo console
+
+    db.session.add(jogo)  # Adiciona o novo jogo ao banco de dados
+    db.session.commit()  # Confirma a operação
+    
+    return redirect(url_for('index'))
+
+@app.route('/deletar/<int:id>')# Rota para o deletar o jogo pegando o id passado na lista.html
+def deletar(id):
+     # se não houver nenhuma chave 'usuario_logado' no dicionário session, redireciona para a rota login
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        return redirect(url_for('login'))
+    
+    Jogos.query.filter_by(id=id).delete() #deleta o jogo pelo id
+    db.session.commit()  # Confirma a operação
+    flash('Jogo deletado com sucesso!')
+    
+    return redirect(url_for('index'))
 
 @app.route('/login')
 def login():
@@ -65,7 +88,7 @@ def autenticar():
     usuario = Usuarios.query.filter_by(nickname=request.form['usuario']).first()
     # se o usuario for true, então o usuário existe no banco de dados
     if usuario:
-        # Verifica se a senha do usuário demtro do dicionário é igual a senha digitada
+        # Verifica se a senha do usuário demtro do bd é igual a senha digitada
         if request.form['senha'] == usuario.senha:
             # Adiciona o nickname do usuário na sessão
             session['usuario_logado'] = usuario.nickname
