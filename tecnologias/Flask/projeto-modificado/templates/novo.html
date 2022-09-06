@@ -28,9 +28,10 @@
       <label for="console">Console</label>
       <input type="text" id="console" name="console" class="form-control" />
     </div>
-    <button type="submit" class="btn btn-primary btn-salvar" id="salvar">
+    <button type="submit" class="btn btn-primary btn-salvar botao-azul">
       Salvar
     </button>
+    <a class="btn btn-danger botao-vermelho" href="{{ url_for('index') }}">Voltar</a>
   </fieldset>
 </form>
 {% endblock %}

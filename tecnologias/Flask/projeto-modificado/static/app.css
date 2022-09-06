@@ -67,12 +67,18 @@ td {
   margin-bottom: 1em;
 }
 
-#salvar{
-  margin-top: 10px;
+.botao-azul,
+.botao-vermelho{
+  margin: 10px 10px 20px 0;
   transition: 1s;
 }
 
-#salvar:hover{
+.botao-azul:hover{
   transform: scale(1.1);
   background-color: #0b4eb3;
+}
+
+.botao-vermelho:hover{
+  transform: scale(1.1);
+  background-color: #b33b0b;
 }
