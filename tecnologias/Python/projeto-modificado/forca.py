@@ -1,4 +1,5 @@
 import random
+import os
 
 def jogar():
     
@@ -157,8 +158,10 @@ def imprime_mensagem_abertura():
     print("*********************************")
     print("***Bem vindo ao jogo da Forca!***")
     print("*********************************")
+ 
+Path = os.path.dirname(os.path.abspath(__file__)) + "/palavras.txt"
     
-def carrega_palavra_secreta(nome_arquivo = "..\\Cursos\\Python\\Jogos\\palavras.txt", primeira_linha_valida = 0):
+def carrega_palavra_secreta(nome_arquivo = Path, primeira_linha_valida = 0):
     palavras = []
 
     with open(nome_arquivo, "r") as arquivo:

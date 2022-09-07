@@ -1,4 +1,3 @@
-from sqlite3 import Timestamp
 from flask import render_template, request, redirect, session, flash, url_for,send_from_directory
 from jogoteca import app, db
 from models import Jogos, Usuarios
