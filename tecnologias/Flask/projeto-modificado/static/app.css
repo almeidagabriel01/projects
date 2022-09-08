@@ -3,7 +3,7 @@ body {
 }
 
 .btn {
-  margin-bottom: 10px;
+  margin: 10px 10px 0 0;
 }
 
 .container {
@@ -53,12 +53,8 @@ td {
   margin-right: 16px
 }
 
-.buttons {
-  margin-top: 16px
-}
-
 .inputBox {
-  width: 700px;
+  width: 390px;
 }
 
 .inputsJogo {
@@ -67,9 +63,8 @@ td {
   margin-bottom: 1em;
 }
 
-.botao-azul,
+.botao-azul
 .botao-vermelho{
-  margin: 10px 10px 20px 0;
   transition: 1s;
 }
 
@@ -81,4 +76,13 @@ td {
 .botao-vermelho:hover{
   transform: scale(1.1);
   background-color: #b33b0b;
+}
+
+.botao{
+  margin-bottom: 10px;
+}
+
+.cadastro
+.login{
+  margin-top: 20px;
 }

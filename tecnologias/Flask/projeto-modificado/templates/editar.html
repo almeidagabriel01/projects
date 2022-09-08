@@ -3,8 +3,9 @@
   action="{{ url_for('atualizar') }}"
   method="post"
   enctype="multipart/form-data"
+  class="formularioJogo"
 >
-  <figure class="img-thumbnail col-md-4">
+  <figure class="img-thumbnail col-md-4 formularioImagem">
     <img
       class="img-fluid"
       src="{{ url_for('imagem', nome_arquivo=capa_jogo) }}"
@@ -18,40 +19,24 @@
   </figure>
 
   <fieldset>
-    <input type="hidden" name="id" value="{{ jogo.id }}" />
-    <div class="form-group">
-      <label for="nome">Nome</label>
-      <input
-        type="text"
-        id="nome"
-        name="nome"
-        class="form-control"
-        value="{{ jogo.nome }}"
-      />
+    <input type="hidden" name="id" value="{{ id }}">
+    {{ form.csrf_token() }}
+    <div class="form-group inputBox">
+      {{ form.nome.label(class = "form-label") }} <!-- criando label com a classe form-label -->
+      {{ form.nome(class = "form-control") }} <!-- criando o input nome com a classe form-control -->
+    </div>
+    <div class="form-group inputBox">
+      {{ form.categoria.label(class = "form-label") }} <!-- criando label com a classe form-label -->
+      {{ form.categoria(class = "form-control") }}  <!-- criando o input categoria com a classe form-control -->
+    </div>
+    <div class="form-group inputBox">
+      {{ form.console.label(class = "form-label") }} <!-- criando label com a classe form-label -->
+      {{ form.console(class = "form-control") }}  <!-- criando o input console com a classe form-control -->
     </div>
     <div class="form-group">
-      <label for="categoria">Categoria</label>
-      <input
-        type="text"
-        id="categoria"
-        name="categoria"
-        class="form-control"
-        value="{{ jogo.categoria }}"
-      />
+      {{ form.salvar(class = "btn btn-primary botao-verde") }} <!-- criando o botão salvar com a classe btn btn-primary -->
+      <a class="btn btn-danger botao-vermelho" href="{{ url_for('index') }}">Voltar</a>
     </div>
-    <div class="form-group">
-      <label for="console">Console</label>
-      <input
-        type="text"
-        id="console"
-        name="console"
-        class="form-control"
-        value="{{ jogo.console }}"
-      />
-    </div>
-    <button type="submit" class="btn btn-primary btn-salvar" id="salvar">
-      Salvar
-    </button>
   </fieldset>
 </form>
 {% endblock %}

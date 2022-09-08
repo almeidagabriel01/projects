@@ -18,10 +18,15 @@
             </ul>
         {% endif %}
     {% endwith %}
-        <h1>Faça seu login</h1>
-        <form method="POST" action="{{ url_for('autenticar') }}">
-          <input type="hidden" name="proxima" value="{{ proxima or url_for('index')  }}">
+        <h1>Faça seu Cadastro</h1>
+        <form method="POST" action="{{ url_for('autenticar_cadastro') }}">
           {{ form.csrf_token() }}
+          <div class="form-group">
+            <!-- Criando label para o nickname -->
+            {{ form.nome.label(class="form-label") }}
+            <!-- Criando input para o nickname -->
+            {{ form.nome(class="form-control") }}
+          </div>
             <div class="form-group">
               <!-- Criando label para o nickname -->
               {{ form.nickname.label(class="form-label") }}
@@ -36,11 +41,11 @@
             </div>
             <div class="form-group">
               <!-- criando botão de submit -->
-              {{ form.submitLogin(class="btn btn-primary botao-verde") }}
+              {{ form.submitCadastro(class="btn btn-primary botao-verde") }}
               <a class="btn btn-danger botao-vermelho" href="{{ url_for('index') }}">Voltar</a>
             </div>
-            <div class="form-group cadastro">
-              <a href="{{ url_for('cadastro') }}">Não tem uma conta? Faça seu cadastro</a>
+            <div class="form-group login">
+              <a href="{{ url_for('login') }}">Já possui uma conta? Faça seu login</a>
             </div>
         </form>
     </div>

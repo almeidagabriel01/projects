@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, session, flash, url_for,send_from_directory
 from jogoteca import app, db
-from models import Jogos, Usuarios
-from helpers import recupera_imagem, deleta_arquivo
+from models import Jogos
+from helpers import recupera_imagem, deleta_arquivo, FormularioJogo
 import time
 
 @app.route('/')  # Rota principal
@@ -16,14 +16,22 @@ def novo():
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         # Redireciona para a rota login com o parâmetro proxima = novo (para que o usuário seja redirecionado para a rota novo após o login)
         return redirect(url_for('login', proxima=url_for('novo')))
-    return render_template('novo.html', titulo='Novo Jogo')
+    
+    form = FormularioJogo()
+    return render_template('novo.html', titulo='Novo Jogo', form = form)
 
 
 @app.route('/criar', methods=['POST', ])  # Aceita apenas o método POST
 def criar():
-    nome = request.form['nome']  # Pega o valor do campo nome
-    categoria = request.form['categoria']  # Pega o valor do campo categoria
-    console = request.form['console']  # Pega o valor do campo console
+    form = FormularioJogo(request.form)
+    
+    # retorna true ou false se o formulário é válido ou não
+    if not form.validate_on_submit():
+        return redirect(url_for('novo'))
+    
+    nome = form.nome.data  # Pega o nome do jogo do formulário pelo WTForms
+    categoria = form.categoria.data  # Pega a categoria do jogo do formulário pelo WTForms
+    console = form.console.data  # Pega o console do jogo do formulário pelo WTForms
     
     #conferindo se o jogo ja existe no banco de dados
     jogo = Jogos.query.filter_by(nome=nome).first()
@@ -49,26 +57,37 @@ def editar(id):
     # se não houver nenhuma chave 'usuario_logado' no dicionário session, redireciona para a rota login
     if ('usuario_logado' not in session or session['usuario_logado'] == None):
         # Redireciona para a rota login com o parâmetro proxima = novo (para que o usuário seja redirecionado para a rota editar após o login)
-        return redirect(url_for('login', proxima=url_for('editar')))
+        return redirect(url_for('login', proxima=url_for('editar', id=id)))
+    
     jogo = Jogos.query.filter_by(id=id).first() #pega o jogo pelo id
+    form = FormularioJogo()
+    
+    form.nome.data = jogo.nome #mudando nome do jogo pelo WTForms  
+    form.categoria.data = jogo.categoria #mudando categoria do jogo pelo WTForms
+    form.console.data = jogo.console #mudando console do jogo pelo WTForms
+    
     capa_jogo = recupera_imagem(id) #pega a capa do jogo pelo id
-    return render_template('editar.html', titulo='Editando Jogo', jogo=jogo, capa_jogo=capa_jogo)
+    return render_template('editar.html', titulo='Editando Jogo', id=id, capa_jogo=capa_jogo, form=form)
 
 @app.route('/atualizar', methods=['POST',])# Aceita apenas o método POST
 def atualizar():
-    jogo = Jogos.query.filter_by(id=request.form['id']).first() #pega o jogo pelo id
-    jogo.nome = request.form['nome']  # Pega o valor do campo nome
-    jogo.categoria = request.form['categoria']  # Pega o valor do campo categoria
-    jogo.console = request.form['console']  # Pega o valor do campo console
-
-    db.session.add(jogo)  # Adiciona o novo jogo ao banco de dados
-    db.session.commit()  # Confirma a operação
+    form = FormularioJogo(request.form)
     
-    arquivo = request.files['arquivo'] # Pega o arquivo enviado no formulário
-    upload_path = app.config['UPLOAD_PATH'] # Pega o caminho de upload definido no arquivo config.py
-    timestamp = time.time() #pega o tempo atual
-    deleta_arquivo(jogo.id) #deleta arquivos antigos
-    arquivo.save(f'{upload_path}/capa{jogo.id}-{timestamp}.jpg') # Salva o arquivo na pasta de upload com um nome unico para contornar o cache do navegador
+    # Se o formulário for validado, atualiza o jogo
+    if form.validate_on_submit():
+        jogo = Jogos.query.filter_by(id=request.form['id']).first() #pega o jogo pelo id do editar.html
+        jogo.nome = form.nome.data  # atualiza o nome do jogo pelo WTForms
+        jogo.categoria = form.categoria.data  # atualiza a categoria do jogo pelo WTForms
+        jogo.console = form.console.data  # atualiza o console do jogo pelo WTForms
+
+        db.session.add(jogo)  # Adiciona o novo jogo ao banco de dados
+        db.session.commit()  # Confirma a operação
+        
+        arquivo = request.files['arquivo'] # Pega o arquivo enviado no formulário
+        upload_path = app.config['UPLOAD_PATH'] # Pega o caminho de upload definido no arquivo config.py
+        timestamp = time.time() #pega o tempo atual
+        deleta_arquivo(jogo.id) #deleta arquivos antigos
+        arquivo.save(f'{upload_path}/capa{jogo.id}-{timestamp}.jpg') # Salva o arquivo na pasta de upload com um nome unico para contornar o cache do navegador
     
     return redirect(url_for('index'))
 
@@ -78,47 +97,12 @@ def deletar(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         return redirect(url_for('login'))
     
+    deleta_arquivo(id) #deleta arquivos antigos
+    
     Jogos.query.filter_by(id=id).delete() #deleta o jogo pelo id
     db.session.commit()  # Confirma a operação
     flash('Jogo deletado com sucesso!')
     
-    return redirect(url_for('index'))
-
-@app.route('/login')
-def login():
-    # Pega o valor do parâmetro proxima da URL (se houver) e armazena na variável proxima
-    proxima = request.args.get('proxima')
-    # Renderiza o template login.html passando a variável proxima como parâmetro
-    return render_template('login.html', proxima=proxima)
-
-
-@app.route('/autenticar', methods=['POST', ])
-def autenticar():
-    # confere se existe o usuário e a senha no banco de dados e se existir, retorna true, se não, retorna false
-    usuario = Usuarios.query.filter_by(nickname=request.form['usuario']).first()
-    # se o usuario for true, então o usuário existe no banco de dados
-    if usuario:
-        # Verifica se a senha do usuário demtro do bd é igual a senha digitada
-        if request.form['senha'] == usuario.senha:
-            # Adiciona o nickname do usuário na sessão
-            session['usuario_logado'] = usuario.nickname
-            flash(usuario.nickname + ' logado com sucesso!')
-            # Pega o valor do campo oculto proxima
-            proxima_pagina = request.form['proxima']
-            # Redireciona para a rota que estava armazenada na variável proxima_pagina
-            # Redireciona para a rota que estava armazenada na variável proxima_pagina
-            return redirect(proxima_pagina)
-        else:
-            flash('Usuário não logado, tente novamente!')
-            # Redireciona para a rota login (função login)
-            return redirect(url_for('login'))
-
-
-@app.route('/logout')
-def logout():
-    session['usuario_logado'] = None
-    flash('Logout efetuado com sucesso!')
-    # Redireciona para a rota principal (função index)
     return redirect(url_for('index'))
 
 @app.route('/uploads/<nome_arquivo>') # Rota para exibir a imagem
