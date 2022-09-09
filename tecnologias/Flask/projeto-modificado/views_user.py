@@ -18,7 +18,7 @@ def login():
 def autenticar():
     form = FormularioUsuario(request.form)
     
-    # confere se existe o usuário e a senha no banco de dados e se existir, retorna true, se não, retorna false
+    # confere se existe o usuário e a senha no banco de dados e se existir, retorna true, se não, retorna none
     usuario = Usuarios.query.filter_by(nickname=form.nickname.data).first()
     
     # se o nickname for true, então o nickname existe no banco de dados
@@ -33,10 +33,10 @@ def autenticar():
             proxima_pagina = request.form['proxima']
             # Redireciona para a rota que estava armazenada na variável proxima_pagina
             return redirect(proxima_pagina)
-    else:
-        flash('Usuário não logado, tente novamente!')
-        # Redireciona para a rota login (função login)
-        return redirect(url_for('login'))
+        
+    flash('Usuário não logado, tente novamente!')
+    # Redireciona para a rota login (função login)
+    return redirect(url_for('login'))
 
 
 @app.route('/logout')
