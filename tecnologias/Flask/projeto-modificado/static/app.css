@@ -63,17 +63,14 @@ td {
   margin-bottom: 1em;
 }
 
-.botao-azul
-.botao-vermelho{
+.botao-verde:hover{
   transition: 1s;
-}
-
-.botao-azul:hover{
   transform: scale(1.1);
   background-color: #0b4eb3;
 }
 
 .botao-vermelho:hover{
+  transition: 1s;
   transform: scale(1.1);
   background-color: #b33b0b;
 }

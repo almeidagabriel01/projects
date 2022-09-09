@@ -59,8 +59,8 @@ def editar(id):
         # Redireciona para a rota login com o parâmetro proxima = novo (para que o usuário seja redirecionado para a rota editar após o login)
         return redirect(url_for('login', proxima=url_for('editar', id=id)))
     
-    jogo = Jogos.query.filter_by(id=id).first() #pega o jogo pelo id
-    form = FormularioJogo()
+    jogo = Jogos.query.filter_by(id=id).first() #pega o jogo pelo id no banco de dados
+    form = FormularioJogo() #pega o formulário de jogo
     
     form.nome.data = jogo.nome #mudando nome do jogo pelo WTForms  
     form.categoria.data = jogo.categoria #mudando categoria do jogo pelo WTForms
@@ -75,7 +75,7 @@ def atualizar():
     
     # Se o formulário for validado, atualiza o jogo
     if form.validate_on_submit():
-        jogo = Jogos.query.filter_by(id=request.form['id']).first() #pega o jogo pelo id do editar.html
+        jogo = Jogos.query.filter_by(id=request.form['id']).first() #pega o jogo pelo id passado do editar.html
         jogo.nome = form.nome.data  # atualiza o nome do jogo pelo WTForms
         jogo.categoria = form.categoria.data  # atualiza a categoria do jogo pelo WTForms
         jogo.console = form.console.data  # atualiza o console do jogo pelo WTForms
@@ -87,7 +87,7 @@ def atualizar():
         upload_path = app.config['UPLOAD_PATH'] # Pega o caminho de upload definido no arquivo config.py
         timestamp = time.time() #pega o tempo atual
         deleta_arquivo(jogo.id) #deleta arquivos antigos
-        arquivo.save(f'{upload_path}/capa{jogo.id}-{timestamp}.jpg') # Salva o arquivo na pasta de upload com um nome unico para contornar o cache do navegador
+        arquivo.save(f'{upload_path}/capa{jogo.id}-{timestamp}.jpg') # Salva o arquivo novo na pasta de upload com um nome unico para contornar o cache do navegador
     
     return redirect(url_for('index'))
 
