@@ -21,22 +21,23 @@ def autenticar():
     # confere se existe o usuário e a senha no banco de dados e se existir, retorna true, se não, retorna none
     usuario = Usuarios.query.filter_by(nickname=form.nickname.data).first()
     
-    # se o nickname for true, então o nickname existe no banco de dados
-    if usuario:
-        # Verifica se a senha do usuário dentro do bd é igual a senha digitada, retorna true, se não, retorna false
-        senha = check_password_hash(usuario.senha, form.senha.data)
+    # verificando se o usuário digitado existe no banco de dados
+    if usuario == None:
+        flash('Usuário não cadastrado!')
+        return redirect(url_for('login'))
+    
+    # se existir, verifica se a senha digitada é igual a senha do banco de dados
+    else:
+        senha = check_password_hash(usuario.senha, form.senha.data) # a senha é colocada depois da verificação do usuário pois se o usuário não existir, o usuario.senha é None e da erro
         if senha:
-            # Adiciona o nickname do usuário na sessão
             session['usuario_logado'] = usuario.nickname
             flash(usuario.nickname + ' logado com sucesso!')
-            # Pega o valor do campo oculto proxima
             proxima_pagina = request.form['proxima']
             # Redireciona para a rota que estava armazenada na variável proxima_pagina
             return redirect(proxima_pagina)
-        
-    flash('Usuário não logado, tente novamente!')
-    # Redireciona para a rota login (função login)
-    return redirect(url_for('login'))
+        else:
+            flash('Senha incorreta!')
+            return redirect(url_for('login'))
 
 
 @app.route('/logout')
