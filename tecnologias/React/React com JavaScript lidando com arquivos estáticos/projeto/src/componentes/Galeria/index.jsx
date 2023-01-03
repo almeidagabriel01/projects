@@ -25,7 +25,7 @@ export default function Galeria() {
         const fotosFiltradas = fotos.filter(foto => foto.tag.includes(textoDigitado));
         setItens(fotosFiltradas);
       }
-      if(textoDigitado === ''){
+      else if(textoDigitado === ''){
         setItens(fotos);
       }
     })
