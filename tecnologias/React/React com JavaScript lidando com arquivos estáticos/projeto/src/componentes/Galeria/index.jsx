@@ -1,35 +1,13 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import Tags from "../Tags";
 import styles from "./Galeria.module.scss";
-import fotos from "./fotos.json";
 import Cards from "./Cards";
+import { FotosContext } from "common/context/Fotos";
+import fotos from './fotos.json'
 
 export default function Galeria() {
-  const [itens, setItens] = useState(fotos);
+  const { itens, setItens, filtraFotos } = useContext(FotosContext);
   const tags = [...new Set(fotos.map((valor) => valor.tag))]
-
-  const filtraFotos = (tag) => {
-    const novasFotos = fotos.filter((foto) => {
-      return foto.tag === tag;
-    })
-
-    setItens(novasFotos);
-  }
-
-  const pesquisa = document.getElementById("pesquisa");
-
-  if(pesquisa){
-    pesquisa.addEventListener("keydown", (event) => {
-      const textoDigitado = event.target.value;
-      if(event.keyCode === 13 && textoDigitado !== ''){
-        const fotosFiltradas = fotos.filter(foto => foto.tag.includes(textoDigitado));
-        setItens(fotosFiltradas);
-      }
-      else if(textoDigitado === ''){
-        setItens(fotos);
-      }
-    })
-  }
 
   return (
     <section className={styles.galeria}>

@@ -7,21 +7,21 @@ import Menu from "componentes/Menu";
 import Galeria from "componentes/Galeria";
 import Populares from "componentes/Populares";
 
-
 export default function PaginaInicial() {
   return (
     <>
       <Cabecalho/>
       <main>
         <section className={styles.principal}>
-         <Menu />
-         <Banner />
+        <Menu />
+        <Banner />
         </section>
         <div className={styles.galeria}>
           <Galeria />
           <Populares />
         </div>
       </main>
+
       <Rodape />
     </>
   )
