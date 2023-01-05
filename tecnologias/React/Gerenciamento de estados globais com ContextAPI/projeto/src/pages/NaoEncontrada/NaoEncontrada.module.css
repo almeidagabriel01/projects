@@ -1,0 +1,93 @@
+.conteudoContainer {
+  position: relative;
+  text-align: center;
+  background-color: #041833;
+  color: #FFF;
+  padding: 15rem 1rem 17rem;
+  height: 100vh;
+  width: 100vw;
+}
+
+.texto404 {
+  display: block;
+  color: #1875E8;
+  font-family: 'Playfair Display', sans-serif;;
+  font-size: 6rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.titulo {
+  font-family: 'Playfair Display', sans-serif;;
+  font-size: 3rem;
+  margin-bottom: 2rem;
+}
+
+.paragrafo {
+  font-size: 1.5rem;
+  line-height: 1.75rem;
+}
+
+.botaoContainer {
+  text-align: center;
+  margin-top: 3.5rem;
+}
+
+.botaoPrincipal {
+  display: inline-block;
+  border-radius: 24px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.125rem;
+  line-height: 1.125rem;
+  background-color: #1875E8;
+  color: #FFF;
+  border: 3px solid #1875E8;
+  cursor: pointer;
+  transition: 0.2s
+}
+
+.botaoPrincipal.lg {
+  padding: 1.5rem 2.75rem;
+  font-size: 1.5rem;
+  line-height: 1.125rem;
+}
+
+.botaoPrincipal:hover {
+  border: 3px solid #041833;
+}
+
+@media (max-width: 1100px) {    
+  .texto404 {
+      margin-bottom: 2.25rem;
+  }
+
+  .botaoContainer {
+      margin-top: 2.75rem;
+      margin-left: 15vw;
+  }
+}
+
+@media (max-width: 744px) {
+  .conteudoContainer {
+      padding: 15rem 1rem 17rem;
+  }
+
+  .texto404 {
+      font-size: 4rem;
+  }
+
+  .titulo {
+      font-size: 2.25rem;
+      line-height: 3rem;
+  }
+
+  .paragrafo {
+      font-size: 1.125rem;
+      line-height: 1.3125rem;
+  }
+
+  .botaoContainer {
+      margin: 2.5rem 0 0;
+      text-align: center;
+  }
+}
